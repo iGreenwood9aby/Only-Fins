@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Only Fins</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>🎣Only Fins</h1>
+
+  <!-- 1) Choose Anglers -->
+  <section id="profile-section">
+    <h2>Choose Anglers to Play (2–6)</h2>
+    <div id="profile-grid" class="grid-2x3"></div>
+    <button id="profile-continue-btn" disabled>Continue</button>
+    <button id="view-session-init" class="mode-btn hidden">View Session Profile</button>
+    <button id="view-alltime-init" class="mode-btn hidden">View All-Time Profile</button>
+  </section>
+
+  <!-- 2) Profile Modal -->
+  <div id="profile-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="modal-title">Add Profile</h3>
+      <label>
+        Name:<br/>
+        <input id="profile-name" type="text" class="large-input"/>
+      </label>
+      <label>
+        Age:<br/>
+        <input id="profile-age" type="number" min="1" class="large-input"/>
+      </label>
+      <h4>Select Avatar</h4>
+      <div id="avatar-options" class="grid-avatars"></div>
+      <button id="save-profile-btn" class="big-btn">Save</button>
+      <button id="cancel-profile-btn" class="big-btn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- 3) Mode Selection -->
+  <section id="mode-section" class="hidden">
+    <h2>Select Game Mode</h2>
+    <div id="mode-buttons" class="grid-2x2">
+      <button class="mode-btn" data-mode="Biggest Fish">Biggest Fish</button>
+      <button class="mode-btn" data-mode="Heaviest Haul">Heaviest Haul</button>
+      <button class="mode-btn" data-mode="Most Fish">Most Fish</button>
+      <button class="mode-btn" data-mode="Sharks Only">Sharks Only</button>
+    </div>
+    <div id="mode-description" class="hidden">
+      <p id="mode-desc-text"></p>
+    </div>
+    <button id="start-game-btn" disabled>Start Game</button>
+  </section>
+
+  <!-- 4) Game Screen -->
+  <section id="game-section" class="hidden">
+    <button id="caught-one-btn">Caught One!</button>
+
+    <div id="scoreboard">
+      <h2>🏆 Scoreboard</h2>
+      <ul id="score-list"></ul>
+      <button id="undo-btn" disabled>Undo Last Catch</button>
+    </div>
+
+    <div id="log-section">
+      <h2>📜 Catch Log</h2>
+      <ul id="log-list"></ul>
+      <button id="end-session-btn">End Session</button>
+    </div>
+
+    <!-- Mid-game profile toggles -->
+    <button id="toggle-session-profile" class="mode-btn">View Session Profile</button>
+    <button id="view-alltime-profile"   class="mode-btn">View All-Time Profile</button>
+  </section>
+
+  <!-- 5) Session Profile Panel -->
+  <section id="session-profile" class="hidden profile-panel">
+    <h3>Session Profile: <span id="session-angler-name"></span></h3>
+    <div class="xp-wheel">
+      <div id="session-xp-fill" class="xp-fill"></div>
+      <div id="session-xp-text" class="xp-text"></div>
+    </div>
+    <p>Session Time: <span id="session-time">00:00:00</span></p>
+
+    <h4>Renown Tally</h4>
+    <ul id="session-renown-tally" class="tally-list"></ul>
+
+    <h4>Species Tally</h4>
+    <ul id="session-species-tally" class="tally-list"></ul>
+
+    <p>Biggest Fish: <span id="session-biggest">—</span></p>
+    <p>Most Caught Species: <span id="session-most-species">—</span></p>
+    <p>Average Weight: <span id="session-avg-weight">—</span> lbs</p>
+  </section>
+
+  <!-- 6) Catch Flow -->
+  <section id="catch-flow-section" class="hidden">
+    <div id="step-angler" class="catch-step">
+      <h2>Who caught this fish?</h2>
+      <div id="angler-buttons"></div>
+    </div>
+    <div id="step-fish" class="catch-step hidden">
+      <h2>What fish?</h2>
+      <div id="fish-buttons"></div>
+      <button id="confirm-fish-btn" class="hidden">Confirm Fish</button>
+    </div>
+    <div id="step-length" class="catch-step hidden">
+      <h2>Enter length (cm)</h2>
+      <input id="length-input" type="number" min="1"/>
+      <button id="length-continue-btn">Continue</button>
+    </div>
+    <div id="step-confirm" class="catch-step hidden">
+      <h2>Confirm Catch</h2>
+      <div id="catch-summary"></div>
+      <button id="confirm-catch-btn">Confirm</button>
+      <button id="cancel-catch-btn">Cancel</button>
+    </div>
+  </section>
+
+  <!-- 7) All-Time Profile Modal -->
+  <div id="alltime-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>All-Time Profile: <span id="alltime-angler-name"></span></h3>
+      <div class="xp-wheel">
+        <div id="alltime-xp-fill" class="xp-fill"></div>
+        <div id="alltime-xp-text" class="xp-text"></div>
+      </div>
+      <p>Total Fishing Time: <span id="alltime-time">00:00:00</span></p>
+
+      <h4>Renown Tally</h4>
+      <ul id="alltime-renown-tally" class="tally-list"></ul>
+
+      <h4>Species Tally</h4>
+      <ul id="alltime-species-tally" class="tally-list"></ul>
+
+      <h4>Biggest Ever per Species</h4>
+      <ul id="alltime-biggest-each" class="tally-list"></ul>
+
+      <p>Most Caught Species: <span id="alltime-most-species">—</span></p>
+      <p>Average Weight: <span id="alltime-avg-weight">—</span> lbs</p>
+
+      <h4>Catch History</h4>
+      <ul id="alltime-log-list" class="tally-list"></ul>
+
+      <button id="close-alltime-modal" class="big-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- 8) Select Angler Modal -->
+  <div id="select-angler-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Select Angler</h3>
+      <div id="select-angler-buttons" class="grid-2x2"></div>
+      <button id="cancel-select-angler" class="big-btn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- html2pdf for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+  <!-- Main application script -->
+  <script src="seaFishingScore.js" defer></script>
+</body>
+</html>
