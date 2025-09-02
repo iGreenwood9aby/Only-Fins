@@ -1609,77 +1609,68 @@ function buildAlltimeProfileHTML(p) {
   return html;
 }
 
-// ─────────────── FULL REPORT EXPORT ─────────────────────────
-function exportFullReportPDF() {
-  const c = document.createElement('div');
-  c.style.padding    = '20px';
-  c.style.background = '#fff';
-  c.style.color      = '#000';
-  c.style.fontFamily = 'Arial, sans-serif';
+  // ─────────────── UPDATED Full PDF EXPORT ───────────────────────
+  function exportFullReportPDF() {
+    const c = document.createElement('div');
+    c.style.padding    = '20px';
+    c.style.background = '#fff';
+    c.style.color      = '#000';
+    c.style.fontFamily = 'Arial, sans-serif';
 
-  // Scoreboard & Catch Log
-  c.innerHTML = `
-    <h1>🎣 Only Fins – Full Session Report</h1>
-    <h2>Scoreboard</h2>
-    <ul>
-      ${profiles.map(p=>
-        `<li>${p.name} (Lvl ${p.level}): ${p.sessionScore||0} pts</li>`
-      ).join('')}
-    </ul>
-    <h2>Catch Log</h2>
-    <ul>
-      ${logEntries.map(e=>`
-        <li>${e.timestamp} – ${e.angler} caught ${e.fish}
-            (${e.length}cm, ${e.weight}lbs) → ${e.score} pts
-            ${e.tier?`– ${e.tier}`:''}
-            ${e.legendaryName?`– <em>${e.legendaryName}</em>`:''}
-        </li>`
-      ).join('')}
-    </ul>
-    <hr>
-  `;
+    profiles.forEach(p => {
+      c.innerHTML += buildSessionProfileHTML(p) + '<hr>';
+      c.innerHTML += buildAlltimeProfileHTML(p)  + '<hr>';
+    });
 
-  // Session & All-Time Profiles
-  profiles.forEach(p => {
-    c.innerHTML += buildSessionProfileHTML(p) + '<hr>';
-    c.innerHTML += buildAlltimeProfileHTML(p)  + '<hr>';
-  });
-
-  html2pdf()
-    .set({
-      margin:       10,
-      filename:     `FullReport_${new Date().toISOString().slice(0,10)}.pdf`,
-      image:        { type:'jpeg', quality:0.98 },
-      html2canvas:  { scale:2 },
-      jsPDF:        { unit:'mm', format:'a4', orientation:'portrait' }
-    })
-    .from(c)
-    .save();
-}
-
-// ─────────────── UPDATED END SESSION ────────────────────────
+    html2pdf()
+      .set({
+        margin:       10,
+        filename:     `FullReport_${new Date().toISOString().slice(0,10)}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
+      .from(c)
+      .outputPdf('blob')
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      });
+  }
+// ─────────────── UPDATED END SESSION ─────────────────────────
 function endSession() {
   if (!confirm('End this fishing session?')) return;
 
   clearInterval(sessionTimerInterval);
   saveProfiles(profiles);
 
-  if (confirm('Save Full Session Report as PDF?')) {
+  // Prompt and open the PDF in a new tab
+  if (confirm('View Full Session Report in a new tab?')) {
     exportFullReportPDF();
   }
 
-  // Reset UI back to choose-anglers
-  hide(gameSection, catchFlowSection, sessionProfile, document.getElementById('alltime-modal'));
-  show(profileSection);
+  // Hide game-related sections
+  hide(
+    document.getElementById('game-section'),
+    document.getElementById('catch-flow-section'),
+    document.getElementById('session-profile'),
+    document.getElementById('alltime-modal')
+  );
 
-  // Clear session data
+  // Show the "choose anglers" screen
+  show(document.getElementById('profile-section'));
+
+  // Reset session data and refresh
   logEntries = [];
   profiles.forEach(p => p.sessionScore = 0);
   renderProfiles();
 }
 
-// Rebind old handler
+// ───────── Rebind End-Session Button ─────────────────────────
+// Note: Do NOT redeclare endSessionBtn if it already exists
+// Just remove and re-attach the handler:
+
 endSessionBtn.removeEventListener('click', endSession);
 endSessionBtn.addEventListener('click', endSession);
 
-}); // ← this closes the DOMContentLoaded listener
+}); // ← closes your DOMContentLoaded listener
